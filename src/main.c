@@ -4,11 +4,8 @@
 
 int main() {
 	graphInit();
-	graphSwitchResolution(RES_800x600);
-	
-	//graphDrawPixel(0, 0, 1);
-	//graphDrawPixel(100, 100, 2);
-	graphDrawLine(0, 0, 100, 100, 3);
+
+	graphFillRect(0, 0, 320, 5, 24);
 	
 	char key;
 	while (1) {

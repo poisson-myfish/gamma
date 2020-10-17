@@ -11,3 +11,6 @@ $(EXEC): $(SOURCES:.c=.o)
 
 cdrom:
 	xorriso -outdev disk.iso -blank as_needed -map ./cdmap
+
+dosbox:
+	dosbox cdmap/main.exe

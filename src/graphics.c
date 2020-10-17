@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/nearptr.h>
+#include <string.h>
 #include "include/math.h"
 
 #define VIDEO_INTERRUPT 0x10
@@ -23,7 +24,7 @@ void switchMode(Byte mode) {
 	int86(VIDEO_INTERRUPT, &regs, &regs);
 }
 
-void superVGAMode(Word resolution) {
+void superVGAMode(Word resolution) {  // Needs some work to deal with SVGA correctly
 	union REGS regs;
 	regs.w.ax = FUNC_SVGA;
 	regs.w.bx = resolution;
@@ -94,4 +95,36 @@ void graphDrawLine(int x1, int y1, int x2, int y2, Byte color) {
 			graphDrawPixel(pixelX, pixelY, color);
 		}
 	}
+}
+
+void graphDrawRect(int topX, int topY, int bottomX, int bottomY, Byte color) {
+    graphDrawLine(topX, topY, topX, bottomY, color);  // Draw left
+	graphDrawLine(topX, bottomY, bottomX, bottomY, color);  // Draw bottom
+	graphDrawLine(topX, topY, bottomX, topY, color);  // Draw top
+	graphDrawLine(bottomX, topY, bottomX, bottomY, color);  // Draw Right
+}
+
+
+void graphFillRect(int topX, int topY, int bottomX, int bottomY, Byte color) {
+  Word temp;
+
+  if (topY > bottomY) {
+    temp = topY;
+    topY = bottomY;
+    bottomY = temp;
+  }
+  
+  if (topX > bottomX) {
+    temp = topX;
+    topX = bottomX;
+    bottomX = temp;
+  }
+
+  Word topOffset = (topY << 8)+(topY << 6) + topX;
+  Word bottomOffset = (bottomY << 8)+(bottomY << 6) + topX;
+  Word width = bottomX - topX + 1;
+
+  for(Word i = topOffset; i <= bottomOffset; i += screenWidth) {
+    memset(&vga[i], color, width - 1);
+  }
 }
